@@ -1,5 +1,6 @@
-package common
+package util
 
+import util.extensions.toInts
 import java.io.File
 
 data class Input(val lines: List<String>) {
