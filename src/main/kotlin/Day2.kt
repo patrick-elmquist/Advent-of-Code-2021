@@ -4,7 +4,7 @@ import util.day
 // answer #2: 1568138742
 
 fun main() {
-    day(n = 2, inParallel = false) {
+    day(n = 2) {
         solution { input ->
             input.lines
                 .mapCommands()
@@ -15,7 +15,7 @@ fun main() {
                         "down" -> (depth + value) to distance
                         else -> TODO()
                     }
-                }.let { (a, b) -> a * b }
+                }.let { (depth, distance) -> depth * distance }
         }
 
         solution { input ->
@@ -26,9 +26,9 @@ fun main() {
                         "forward" -> Triple(depth + value * aim, distance + value, aim)
                         "up" -> Triple(depth, distance, aim - value)
                         "down" -> Triple(depth, distance, aim + value)
-                        else -> throw IllegalArgumentException()
+                        else -> TODO()
                     }
-                }.let { (a, b, _) -> a * b }
+                }.let { (depth, distance) -> depth * distance }
         }
     }
 }

@@ -10,7 +10,7 @@ fun main() {
         }
 
         solution { input ->
-            input.ints.windowed(size = 3, step = 1).zipWithNext().count { (a, b) -> b.sum() > a.sum() }
+            input.ints.windowed(size = 4).zipWithNext().count { (a, b) -> b.sum() > a.sum() }
         }
     }
 }
