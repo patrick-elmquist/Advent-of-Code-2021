@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalTime::class)
+
 package util
 
 import kotlinx.coroutines.*
+import kotlin.time.ExperimentalTime
 import kotlin.time.TimedValue
 import kotlin.time.measureTimedValue
 
@@ -48,14 +51,22 @@ private suspend fun AnswerSheet.evaluate(
 ): TimedValue<List<TimedValue<Any?>>> = coroutineScope {
     measureTimedValue {
         if (inParallel) {
-            solutions.map { (algorithm, _) ->
+            solutions.map { (algorithm, _, expected) ->
                 async {
-                    measureTimedValue { algorithm(input) }
+                    measureTimedValue {
+                        algorithm(input).also {
+                            check(expected == null || expected == it) { "Expected:$expected got:$it"}
+                        }
+                    }
                 }
             }.awaitAll()
         } else {
-            solutions.map { (algorithm, _) ->
-                measureTimedValue { algorithm(input) }
+            solutions.map { (algorithm, _, expected) ->
+                measureTimedValue {
+                    algorithm(input).also {
+                        check(expected == null || expected == it) { "Expected:$expected got:$it"}
+                    }
+                }
             }
         }
     }
@@ -80,7 +91,11 @@ private fun assertFailMessage(input: Input, expected: Any, result: Any?): String
 
 typealias Algorithm = suspend CoroutineScope.(Input) -> Any?
 
-data class Solution(val algorithm: Algorithm, val asserts: Map<String, Any>)
+data class Solution(
+    val algorithm: Algorithm,
+    val asserts: Map<String, Any>,
+    val expected: Any?
+)
 
 class AnswerSheet {
     private val _solutions = mutableListOf<Solution>()
@@ -88,8 +103,8 @@ class AnswerSheet {
 
     private var asserts = mutableMapOf<String, Any>()
 
-    fun solution(algorithm: Algorithm) {
-        _solutions.add(Solution(algorithm, asserts.toMap()))
+    fun solution(expected: Any? = null, algorithm: Algorithm) {
+        _solutions.add(Solution(algorithm, asserts.toMap(), expected))
         asserts.clear()
     }
 
