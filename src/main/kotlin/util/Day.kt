@@ -116,8 +116,6 @@ class AnswerSheet {
         asserts.putAll(assertWith)
     }
 
-    infix fun String.assert(result: Any) {
-        this@AnswerSheet.assert(this to result)
-    }
+    infix fun String.assert(result: Any) = this@AnswerSheet.assert(this to result)
 }
 

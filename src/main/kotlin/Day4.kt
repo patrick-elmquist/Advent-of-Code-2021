@@ -2,7 +2,6 @@ import util.Input
 import util.day
 import util.extensions.splitOnBlank
 import util.extensions.toInts
-import util.print
 
 // answer #1: 35670
 // answer #2: not 35904, too high
@@ -11,7 +10,7 @@ private const val SIZE = 5
 private const val MARKED = -1
 
 fun main() {
-    day(n = 4, failFastAssertion = true) {
+    day(n = 4) {
         testInput assert 4512
         solution(expected = 35670) { input ->
             val (numbers, boards) = input.parseNumbersAndBoards()
