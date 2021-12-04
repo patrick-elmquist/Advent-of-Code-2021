@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package util
 
 import kotlinx.coroutines.*
@@ -45,6 +43,7 @@ private suspend fun AnswerSheet.runAssertions(
     this@runAssertions
 }
 
+@OptIn(ExperimentalTime::class)
 private suspend fun AnswerSheet.evaluate(
     input: Input,
     inParallel: Boolean
@@ -72,6 +71,7 @@ private suspend fun AnswerSheet.evaluate(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 private fun TimedValue<List<TimedValue<Any?>>>.printResults() =
     print {
         val (results, totalDuration) = this@printResults

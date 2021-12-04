@@ -44,7 +44,7 @@ private fun List<String>.determineCo2Rating(index: Int = 0): Int {
     return filter { it[index].digitToInt() == value }.determineCo2Rating(index + 1)
 }
 
-val testInput = """
+private val testInput = """
     00100
     11110
     10110
