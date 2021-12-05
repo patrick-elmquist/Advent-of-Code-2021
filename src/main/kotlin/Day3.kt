@@ -1,13 +1,21 @@
 import util.day
+import util.extensions.isBitSet
+import util.print
 
 // answer #1: 4006064
 // answer #2: 5941884
-
 fun main() {
     day(n = 3) {
+        val test = listOf(7, 0, 5)
+        check(test.processColumnInt(0) == 2 to 1) { "Index 0 didn't work" }
+        check(test.processColumnInt(1) == 1 to 2) { "Index 1 didn't work" }
+        check(test.processColumnInt(2) == 2 to 1) { "Index 2 didn't work" }
+
         testInput assert 198
         solution(expected = 4006064) { input ->
-            input.lines.calculateGammaRate() * input.lines.calculateEpsilonRate()
+            val ints = input.lines.map { it.toInt(2) }
+            val bits = input.lines.first().length
+            ints.calculateGammaRate(bits) * ints.calculateEpsilonRate(bits)
         }
 
         testInput assert 230
@@ -17,11 +25,11 @@ fun main() {
     }
 }
 
-private fun List<String>.calculateGammaRate(): Int =
-    first().indices.fold(0) { acc, index -> acc shl 1 or processColumn(index).mostCommon() }
+private fun List<Int>.calculateGammaRate(bits: Int): Int =
+    ((bits - 1) downTo 0).fold(0) { acc, index -> acc shl 1 or processColumnInt(index).mostCommon() }
 
-private fun List<String>.calculateEpsilonRate(): Int =
-    first().indices.fold(0) { acc, index -> acc shl 1 or processColumn(index).leastCommon() }
+private fun List<Int>.calculateEpsilonRate(bits: Int): Int =
+    ((bits - 1) downTo 0).fold(0) { acc, index -> acc shl 1 or processColumnInt(index).leastCommon() }
 
 private fun List<String>.determineOxygenRating(index: Int = 0): Int {
     if (size == 1) return first().toInt(radix = 2)
@@ -37,6 +45,9 @@ private fun List<String>.determineCo2Rating(index: Int = 0): Int {
 
 private fun List<String>.processColumn(index: Int): OnesAndZeros =
     sumOf { row -> row[index].digitToInt() }.let { ones -> ones to size - ones }
+
+private fun List<Int>.processColumnInt(index: Int): OnesAndZeros =
+    count { it.isBitSet(index) }.let { ones -> ones to size - ones }
 
 private fun OnesAndZeros.mostCommon(): Int = if (first < second) 0 else 1
 
