@@ -4,7 +4,7 @@ import util.extensions.splitOnBlank
 import util.extensions.toInts
 
 // answer #1: 35670
-// answer #2: not 35904, too high
+// answer #2: 22704
 
 private const val SIZE = 5
 private const val MARKED = -1
