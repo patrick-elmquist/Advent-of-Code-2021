@@ -10,6 +10,8 @@ package util
  */
 operator fun String.not() = println(this)
 
-inline fun <T> T.print(msg: String? = null): T = this.also { println("$msg$it") }
+inline fun <T> T.log(): T = this.also { println(it) }
 
-inline fun <T> T.print(block: StringBuilder.() -> Unit): T = this.also { buildString(block).also { print(it) } }
+inline fun <T> T.log(msg: String): T = this.also { println("$msg$it") }
+
+inline fun <T> T.log(block: StringBuilder.() -> Unit): T = this.also { buildString(block).also { print(it) } }

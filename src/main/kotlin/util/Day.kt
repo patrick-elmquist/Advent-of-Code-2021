@@ -31,12 +31,11 @@ private suspend fun AnswerSheet.runAssertions(
             asserts.forEach { (testInput, expected) ->
                 val input = Input(testInput.lines())
                 val result = algorithm(input)
-                val msg = when {
+                when {
                     result == expected -> assertPassMessage(input)
                     failFast -> throw AssertionError(assertFailMessage(input, expected, result))
                     else -> assertFailMessage(input, expected, result)
-                }
-                print(msg)
+                }.log()
             }
             println()
         }
@@ -73,7 +72,7 @@ private suspend fun AnswerSheet.evaluate(
 
 @OptIn(ExperimentalTime::class)
 private fun TimedValue<List<TimedValue<Any?>>>.printResults() =
-    print {
+    log {
         val (results, totalDuration) = this@printResults
         results.forEachIndexed { index, (answer, time) ->
             appendLine("Answer: #${index + 1}: ${answer ?: "Failed"} (${time.inWholeMilliseconds}ms)")

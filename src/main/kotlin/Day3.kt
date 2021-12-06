@@ -7,14 +7,12 @@ import util.extensions.isBitSet
 
 fun main() {
     day(n = 3) {
-        testInput assert 198
         solution(expected = 4006064) { input ->
             val ints = input.lines.map { it.toInt(radix = 2) }
             val bits = input.lines.first().length
             ints.calculateGammaRate(bits) * ints.calculateEpsilonRate(bits)
         }
 
-        testInput assert 230
         solution(expected = 5941884) { input ->
             val ints = input.lines.map { it.toInt(radix = 2) }
             val bits = input.lines.first().length
@@ -49,18 +47,3 @@ typealias OnesAndZeros = Pair<Int, Int>
 private fun OnesAndZeros.mostCommon(): Int = if (first < second) 0 else 1
 
 private fun OnesAndZeros.leastCommon(): Int = if (first < second) 1 else 0
-
-private val testInput = """
-    00100
-    11110
-    10110
-    10111
-    10101
-    01111
-    00111
-    11100
-    10000
-    11001
-    00010
-    01010
-""".trimIndent()
