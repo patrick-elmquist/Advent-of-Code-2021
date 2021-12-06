@@ -1,11 +1,9 @@
-import util.Point
 import util.day
-import util.extensions.safeRange
 
 // answer #1: 7142
 // answer #2: 20012
 
-private val regex = """(\d+),(\d+) -> (\d+),(\d+)""".toRegex()
+private val PARSE_REGEX = """(\d+),(\d+) -> (\d+),(\d+)""".toRegex()
 
 fun main() {
     day(n = 5) {
@@ -28,7 +26,7 @@ fun main() {
 }
 
 private fun List<String>.parseStartAndEndPoints(): List<Pair<Point, Point>> =
-    mapNotNull { regex.matchEntire(it)?.destructured }
+    mapNotNull { PARSE_REGEX.matchEntire(it)?.destructured }
         .map { (x1, y1, x2, y2) -> Point(x1.toInt(), y1.toInt()) to Point(x2.toInt(), y2.toInt()) }
 
 private fun List<Pair<Point, Point>>.mapLinesToPoints() =
@@ -44,4 +42,10 @@ private fun List<Pair<Point, Point>>.mapLinesToPoints() =
         }
     }
 
-private fun List<Pair<Int, Int>>.groupOverlappingPoints() = groupingBy { it }.eachCount()
+private fun List<Pair<Int, Int>>.groupOverlappingPoints() =
+    groupingBy { it }.eachCount()
+
+private infix fun Int.safeRange(other: Int) =
+    if (this < other) this..other else this downTo other
+
+private data class Point(val x: Int, val y: Int)

@@ -9,6 +9,8 @@ import util.extensions.toInts
 private const val SIZE = 5
 private const val MARKED = -1
 
+private val WHITE_SPACE_REGEX = """\s+""".toRegex()
+
 fun main() {
     day(n = 4) {
         testInput assert 4512
@@ -51,7 +53,7 @@ fun main() {
 private fun Input.parseNumbersAndBoards(): Pair<List<Int>, List<MutableList<Int>>> {
     val numbers = lines.first().split(",").toInts()
     val boards = lines.drop(2).splitOnBlank().map {
-        it.flatMap { board -> board.trim().split("""\s+""".toRegex()).toInts() }.toMutableList()
+        it.flatMap { board -> board.trim().split(WHITE_SPACE_REGEX).toInts() }.toMutableList()
     }
     return numbers to boards
 }
@@ -66,7 +68,7 @@ private fun List<Int>.hasBingo(index: Int): Boolean {
 }
 
 private val testInput = """
-   7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -84,4 +86,4 @@ private val testInput = """
 10 16 15  9 19
 18  8 23 26 20
 22 11 13  6  5
- 2  0 12  3  7 """.trimStart()
+ 2  0 12  3  7""".trimStart()

@@ -43,7 +43,5 @@ private fun List<Int>.processColumn(index: Int): OnesAndZeros =
     count { it.isBitSet(index) }.let { ones -> ones to size - ones }
 
 typealias OnesAndZeros = Pair<Int, Int>
-
 private fun OnesAndZeros.mostCommon(): Int = if (first < second) 0 else 1
-
 private fun OnesAndZeros.leastCommon(): Int = if (first < second) 1 else 0

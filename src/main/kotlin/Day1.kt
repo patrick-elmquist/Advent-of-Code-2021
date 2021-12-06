@@ -5,11 +5,11 @@ import util.day
 
 fun main() {
     day(n = 1) {
-        solution { input ->
+        solution(expected = 1228) { input ->
             input.ints.zipWithNext().count { (a, b) -> b > a }
         }
 
-        solution { input ->
+        solution(expected = 1257) { input ->
             input.ints.windowed(size = 4).zipWithNext().count { (a, b) -> b.sum() > a.sum() }
         }
     }

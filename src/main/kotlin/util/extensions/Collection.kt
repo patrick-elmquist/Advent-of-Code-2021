@@ -10,6 +10,3 @@ fun <E : CharSequence, T : List<E>> T.splitOnBlank() =
             list.add(subList(start, end))
             list to end + 1
         }.first.toList()
-
-fun <T> linkedList(size: Int, initial: (Int) -> T): LinkedList<T> =
-    LinkedList<T>().apply { (0 until size).forEach { index -> add(initial(index)) } }

@@ -1,6 +1,5 @@
 import util.Input
 import util.day
-import util.extensions.linkedList
 import java.util.*
 
 // answer #1: 360761
@@ -19,6 +18,9 @@ fun main() {
         }
     }
 }
+
+private fun <T> linkedList(size: Int, initial: (Int) -> T): LinkedList<T> =
+    LinkedList<T>().apply { (0 until size).forEach { index -> add(initial(index)) } }
 
 private fun algorithm(input: Input, days: Int): Long {
     val cycles = linkedList(9) { 0L }

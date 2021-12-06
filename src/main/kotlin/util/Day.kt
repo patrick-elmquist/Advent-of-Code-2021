@@ -58,7 +58,9 @@ private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutine
                 } && solutionResult
             } && overallResult
         }
-    println()
+
+    if (solutions.any { it.asserts.isNotEmpty() }) println()
+
     if (result) {
         Result.success(this@runAssertions)
     } else {
