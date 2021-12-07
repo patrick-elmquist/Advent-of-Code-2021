@@ -16,7 +16,7 @@ fun main() {
         solution(expected = 5941884) { input ->
             val ints = input.lines.map { it.toInt(radix = 2) }
             val bits = input.lines.first().length
-            ints.determineOxygenRating(bits - 1) * ints.determineCo2Rating(bits - 1)
+            ints.determineOxygenRating(index = bits - 1) * ints.determineCo2Rating(index = bits - 1)
         }
     }
 }

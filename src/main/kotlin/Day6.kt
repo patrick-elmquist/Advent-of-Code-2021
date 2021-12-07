@@ -1,5 +1,6 @@
 import util.Input
 import util.day
+import util.extensions.toInts
 import java.util.*
 
 // answer #1: 360761
@@ -25,7 +26,7 @@ private fun <T> linkedList(size: Int, initial: (Int) -> T): LinkedList<T> =
 private fun algorithm(input: Input, days: Int): Long {
     val cycles = linkedList(9) { 0L }
 
-    input.lines.first().split(",").map { it.toInt() }
+    input.lines.first().split(",").toInts()
         .groupingBy { it }
         .eachCount()
         .forEach { (index, count) -> cycles[index] = count.toLong() }
