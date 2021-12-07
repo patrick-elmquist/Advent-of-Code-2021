@@ -9,7 +9,7 @@ import util.extensions.toInts
 private const val SIZE = 5
 private const val MARKED = -1
 
-private val WHITE_SPACE_REGEX = """\s+""".toRegex()
+private val WHITE_SPACE_REGEX = "\\s+".toRegex()
 
 fun main() {
     day(n = 4) {

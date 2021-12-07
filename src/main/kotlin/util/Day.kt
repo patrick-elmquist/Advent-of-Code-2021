@@ -34,12 +34,11 @@ private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutine
     val result = solutions.withIndex()
         .filter { (_, solution) -> solution.asserts.isNotEmpty() }
         .fold(true) { overallResult, (index, solution) ->
-            println()
             println("SOLUTION #${index + 1} ASSERTS")
             println("===================")
 
             val (algorithm, asserts) = solution
-            asserts.fold(true) { solutionResult, step ->
+            val solutionAsserts = asserts.fold(true) { solutionResult, step ->
                 when (step) {
                     is Break -> return@scope Result.failure(BreakAssertionException)
                     is Assert -> {
@@ -56,10 +55,10 @@ private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutine
                         result == expected
                     }
                 } && solutionResult
-            } && overallResult
+            }
+            println()
+            solutionAsserts && overallResult
         }
-
-    if (solutions.any { it.asserts.isNotEmpty() }) println()
 
     if (result) {
         Result.success(this@runAssertions)
@@ -102,7 +101,7 @@ private fun TimedValue<List<TimedValue<Any?>>>.printResults() =
         results.forEachIndexed { index, (answer, time) ->
             appendLine("Answer: #${index + 1}: ${answer ?: "Failed"} (${time.inWholeMilliseconds}ms)")
         }
-        appendLine("Total duration: ${totalDuration.inWholeMilliseconds}ms")
+        append("Total duration: ${totalDuration.inWholeMilliseconds}ms")
     }.let { println(it) }
 
 private fun passMessage(input: Input) = buildString { appendLine("PASS: ${input.lines}") }
