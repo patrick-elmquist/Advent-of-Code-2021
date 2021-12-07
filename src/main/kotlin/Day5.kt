@@ -32,11 +32,11 @@ private fun List<String>.parseStartAndEndPoints(): List<Pair<Point, Point>> =
 private fun List<Pair<Point, Point>>.mapLinesToPoints() =
     flatMap { (start, end) ->
         when {
-            start.x == end.x -> (start.y safeRange end.y).map { start.x to it }
-            start.y == end.y -> (start.x safeRange end.x).map { it to start.y }
+            start.x == end.x -> (start.y range end.y).map { start.x to it }
+            start.y == end.y -> (start.x range end.x).map { it to start.y }
             else -> {
-                val xRange = (start.x safeRange end.x).toList()
-                val yRange = (start.y safeRange end.y).toList()
+                val xRange = (start.x range end.x).toList()
+                val yRange = (start.y range end.y).toList()
                 List(xRange.size) { index -> xRange[index] to yRange[index] }
             }
         }
@@ -45,7 +45,7 @@ private fun List<Pair<Point, Point>>.mapLinesToPoints() =
 private fun List<Pair<Int, Int>>.groupOverlappingPoints() =
     groupingBy { it }.eachCount()
 
-private infix fun Int.safeRange(other: Int) =
+private infix fun Int.range(other: Int) =
     if (this < other) this..other else this downTo other
 
 private data class Point(val x: Int, val y: Int)

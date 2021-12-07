@@ -21,8 +21,8 @@ fun main() {
 }
 
 private fun Input.parse(): Pair<List<Int>, IntRange> =
-    lines.first().split(",").toInts().let { crabs ->
-        crabs to (crabs.minOf { it }..crabs.maxOf { it })
+    lines.first().split(",").toInts().sorted().let { crabs ->
+        crabs to (crabs.first() .. crabs.last())
     }
 
 private fun List<Int>.constantCostToPoint(target: Int): Int =
