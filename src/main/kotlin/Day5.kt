@@ -1,3 +1,4 @@
+import util.Point
 import util.day
 
 // answer #1: 7142
@@ -47,5 +48,3 @@ private fun List<Pair<Int, Int>>.groupOverlappingPoints() =
 
 private infix fun Int.range(other: Int) =
     if (this < other) this..other else this downTo other
-
-private data class Point(val x: Int, val y: Int)
