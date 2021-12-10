@@ -9,7 +9,7 @@ fun main() {
         solution(expected = 315693) { input ->
             val pointsLookup = mapOf(')' to 3, ']' to 57, '}' to 1197, '>' to 25137)
             input.lines
-                .map { line -> line.analyseChunks() }
+                .map { line -> line.analyzeChunks() }
                 .filter { (corruptChunk, _) -> corruptChunk != null }
                 .mapNotNull { (corruptChunk, _) -> pointsLookup[corruptChunk] }
                 .sum()
@@ -18,7 +18,7 @@ fun main() {
         solution(expected = 1870887234L) { input ->
             val pointsLookup = mapOf(')' to 1, ']' to 2, '}' to 3, '>' to 4)
             input.lines
-                .map { it.analyseChunks() }
+                .map { it.analyzeChunks() }
                 .filter { (corruptChunk, _) -> corruptChunk == null }
                 .map { (_, missingEnds) ->
                     missingEnds.fold(0L) { score, c -> score * 5L + pointsLookup[c]!! }
@@ -29,20 +29,19 @@ fun main() {
     }
 }
 
-private fun String.analyseChunks(): Pair<Char?, List<Char>> {
-    val list: MutableList<Pair<Chunk, Int>> = mutableListOf()
+private fun String.analyzeChunks(): Pair<Char?, List<Char>> {
+    val openChunks = mutableListOf<Pair<Chunk, Int>>()
 
     val corruptedChunk = firstOrNull { c ->
         val chunk = Chunk(c)
         if (c == chunk.open) {
-            list.add(chunk to list.size)
-            false
+            openChunks.add(chunk to openChunks.size)
         } else {
-            !list.remove(chunk to list.size - 1)
-        }
+            openChunks.remove(chunk to openChunks.size - 1)
+        }.not()
     }
 
-    val missingEnds = list.reversed().map { (chunk, _) -> chunk.close }
+    val missingEnds = openChunks.reversed().map { (chunk, _) -> chunk.close }
 
     return corruptedChunk to missingEnds
 }
