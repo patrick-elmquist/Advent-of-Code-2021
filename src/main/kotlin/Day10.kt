@@ -5,7 +5,6 @@ import util.day
 
 fun main() {
     day(n = 10) {
-
         solution(expected = 315693) { input ->
             val pointsLookup = mapOf(')' to 3, ']' to 57, '}' to 1197, '>' to 25137)
             input.lines
