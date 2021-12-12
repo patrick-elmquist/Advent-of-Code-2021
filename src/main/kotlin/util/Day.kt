@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_IS_NOT_ENABLED")
+
 package util
 
 import kotlinx.coroutines.*
@@ -27,7 +29,7 @@ fun day(
         }
 }
 
-private fun collectSolutions(block: AnswerSheet.() -> Unit): AnswerSheet =
+private inline fun collectSolutions(block: AnswerSheet.() -> Unit): AnswerSheet =
     AnswerSheet().apply(block)
 
 private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutineScope scope@{
@@ -72,22 +74,10 @@ private suspend fun AnswerSheet.evaluate(
     input: Input
 ): TimedValue<List<TimedValue<Any?>>> = coroutineScope {
     measureTimedValue {
-        if (inParallel) {
-            solutions.map { (algorithm, _, expected) ->
-                async {
-                    measureTimedValue {
-                        algorithm(input).also {
-                            check(expected == null || expected == it) { "Expected:$expected got:$it" }
-                        }
-                    }
-                }
-            }.awaitAll()
-        } else {
-            solutions.map { (algorithm, _, expected) ->
-                measureTimedValue {
-                    algorithm(input).also {
-                        check(expected == null || expected == it) { "Expected:$expected got:$it" }
-                    }
+        solutions.map { (algorithm, _, expected) ->
+            measureTimedValue {
+                algorithm(input).also {
+                    check(expected == null || expected == it) { "Expected:$expected got:$it" }
                 }
             }
         }
@@ -104,7 +94,10 @@ private fun TimedValue<List<TimedValue<Any?>>>.printResults() =
         append("Total duration: ${totalDuration.inWholeMilliseconds}ms")
     }.let { println(it) }
 
-private fun passMessage(input: Input) = buildString { appendLine("PASS: ${input.lines}") }
+private fun passMessage(input: Input) =
+    buildString {
+        appendLine("PASS: ${input.lines}")
+    }
 
 private fun failMessage(input: Input, expected: Any, result: Any?): String =
     buildString {
@@ -126,8 +119,6 @@ class AnswerSheet {
     val solutions: List<Solution> = _solutions
 
     var failFastAssertion = false
-
-    var inParallel = false
 
     private var asserts = mutableListOf<AssertStep>()
 
