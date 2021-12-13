@@ -1,6 +1,10 @@
 package util
 
-data class Point(val x: Int, val y: Int)
+import util.extensions.minToMax
+
+data class Point(val x: Int, val y: Int) {
+    companion object
+}
 
 fun Point.neighbors(diagonal: Boolean = false): List<Point> =
     buildList {
@@ -16,3 +20,10 @@ fun Point.neighbors(diagonal: Boolean = false): List<Point> =
             add(Point(x + 1, y + 1))
         }
     }
+
+operator fun Point.Companion.invoke(x: String, y: String) =
+    Point(x.toInt(), y.toInt())
+
+val Collection<Point>.xRange get() = map { it.x }.minToMax()
+
+val Collection<Point>.yRange get() = map { it.y }.minToMax()
