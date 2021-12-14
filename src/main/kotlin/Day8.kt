@@ -7,14 +7,14 @@ import util.day
 fun main() {
     day(n = 8) {
         solution(expected = 409) { input ->
-            parsePatternsAndOutputs(input)
+            input.parsePatternsAndOutputs()
                 .sumOf { (_, output) ->
                     output.count { number -> number.size in listOf(2, 3, 4, 7) }
                 }
         }
 
         solution(expected = 1024649) { input ->
-            parsePatternsAndOutputs(input)
+            input.parsePatternsAndOutputs()
                 .sumOf { (patterns, output) ->
                     val numbers = MutableList(10) { emptySet<Char>() }
 
@@ -38,8 +38,8 @@ fun main() {
     }
 }
 
-private fun parsePatternsAndOutputs(input: Input) =
-    input.lines.map { line ->
+private fun Input.parsePatternsAndOutputs() =
+    lines.map { line ->
         line.split(" | ").let { (patterns, output) ->
             patterns.split(" ").map { it.toSet() } to output.split(" ").map { it.toSet() }
         }
