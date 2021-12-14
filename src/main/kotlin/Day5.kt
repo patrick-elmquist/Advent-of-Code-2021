@@ -35,11 +35,7 @@ private fun List<Pair<Point, Point>>.mapLinesToPoints() =
         when {
             start.x == end.x -> (start.y range end.y).map { start.x to it }
             start.y == end.y -> (start.x range end.x).map { it to start.y }
-            else -> {
-                val xRange = (start.x range end.x).toList()
-                val yRange = (start.y range end.y).toList()
-                List(xRange.size) { index -> xRange[index] to yRange[index] }
-            }
+            else -> (start.x range end.x).zip(start.y range end.y)
         }
     }
 
