@@ -1,7 +1,7 @@
+
 import util.Input
 import util.day
 import util.extensions.toInts
-import java.util.*
 
 // answer #1: 360761
 // answer #2: 1632779838045
@@ -20,11 +20,8 @@ fun main() {
     }
 }
 
-private fun <T> linkedList(size: Int, initial: (Int) -> T): LinkedList<T> =
-    LinkedList<T>().apply { (0 until size).forEach { index -> add(initial(index)) } }
-
 private fun algorithm(input: Input, days: Int): Long {
-    val cycles = linkedList(9) { 0L }
+    val cycles = MutableList(9) { 0L }
 
     input.lines.first().split(",").toInts()
         .groupingBy { it }
@@ -36,8 +33,8 @@ private fun algorithm(input: Input, days: Int): Long {
     return cycles.sumOf { it }
 }
 
-private fun LinkedList<Long>.nextDay() =
-    removeFirst().let { newFishCount ->
-        set(RESET_INDEX, get(RESET_INDEX) + newFishCount)
-        add(newFishCount)
-    }
+private fun MutableList<Long>.nextDay() {
+    val newFishCount = removeFirst()
+    set(RESET_INDEX, get(RESET_INDEX) + newFishCount)
+    add(newFishCount)
+}
