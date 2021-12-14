@@ -1,4 +1,7 @@
-import util.*
+import util.Input
+import util.Point
+import util.day
+import util.neighbors
 
 // answer #1: 508
 // answer #2: 1564640
@@ -21,7 +24,7 @@ fun main() {
                 .map { point -> points.calculateBasinForPoint(point, visited) }
                 .sorted()
                 .takeLast(3)
-                .fold(1) { a, b -> a * b }
+                .reduce { a, b -> a * b }
         }
     }
 }
