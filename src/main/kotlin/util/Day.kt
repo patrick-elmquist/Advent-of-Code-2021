@@ -2,8 +2,11 @@
 
 package util
 
-import kotlinx.coroutines.*
-import util.AssertStep.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import util.AssertStep.Break
+import util.AssertStep.EqualTo
 import kotlin.time.ExperimentalTime
 import kotlin.time.TimedValue
 import kotlin.time.measureTimedValue
@@ -43,7 +46,7 @@ private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutine
             val solutionAsserts = asserts.fold(true) { solutionResult, step ->
                 when (step) {
                     is Break -> return@scope Result.failure(BreakAssertionException)
-                    is Assert -> {
+                    is EqualTo -> {
                         val (testInput, expected) = step
                         val input = Input(testInput.lines())
                         val result = algorithm(input)
@@ -130,12 +133,12 @@ class AnswerSheet {
     @Suppress("unused")
     fun stop() = asserts.add(Break)
 
-    infix fun String.assert(result: Any) = asserts.add(Assert(this, result))
+    infix fun String.assert(result: Any) = asserts.add(EqualTo(this, result))
 }
 
 sealed class AssertStep {
     object Break : AssertStep()
-    data class Assert(val input: String, val expected: Any) : AssertStep()
+    data class EqualTo(val input: String, val expected: Any) : AssertStep()
 }
 
 private sealed class AnswerException(message: String = "") : Exception(message)
