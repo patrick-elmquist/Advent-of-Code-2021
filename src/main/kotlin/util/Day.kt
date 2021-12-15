@@ -80,7 +80,11 @@ private suspend fun AnswerSheet.evaluate(
         solutions.map { (algorithm, _, expected) ->
             measureTimedValue {
                 algorithm(input).also {
-                    check(expected == null || expected == it) { "Expected:$expected got:$it" }
+                    if (failFastAssertion) {
+                        check(expected == null || expected == it) { "FAIL Expected:$expected got:$it" }
+                    } else if (expected != null && expected != it) {
+                        println("FAIL Expected:$expected got:$it")
+                    }
                 }
             }
         }
