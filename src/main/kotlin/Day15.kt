@@ -8,14 +8,12 @@ import kotlin.math.sqrt
 
 fun main() {
     day(n = 15) {
-        testInputLarge assert 40
         solution(expected = 656) { input ->
             val lines = input.lines
             val array = lines.flatMap { it.map { it.digitToInt() } }.toTypedArray()
             findLeastRiskyPath(array)
         }
 
-        testInputLarge assert 315
         solution(expected = 2979) { input ->
             val lines = input.lines
             val extend = 5
@@ -71,16 +69,3 @@ private fun findLeastRiskyPath(matrix: Array<Int>): Int {
 
     return scratch.last()
 }
-
-private val testInputLarge = """
-1163751742
-1381373672
-2136511328
-3694931569
-7463417111
-1319128137
-1359912421
-3125421639
-1293138521
-2311944581
-""".trimIndent()
