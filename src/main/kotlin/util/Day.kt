@@ -47,17 +47,15 @@ private suspend fun AnswerSheet.runAssertions(): Result<AnswerSheet> = coroutine
                 when (step) {
                     is Break -> return@scope Result.failure(BreakAssertionException)
                     is EqualTo -> {
-                        val (testInput, expected) = step
-                        val input = Input(testInput.lines())
+                        val input = Input(step.input.lines())
                         val result = algorithm(input)
-                        if (result == expected) {
-                            print(passMessage(input))
-                        } else if (failFastAssertion) {
-                            return@scope Result.failure(AssertFailedException(failMessage(input, expected, result)))
-                        } else {
-                            print(failMessage(input, expected, result))
+                        when {
+                            result == step.expected -> print(pass(input))
+                            failFast ->
+                                return@scope Result.failure(AssertFailedException(fail(input, step.expected, result)))
+                            else -> print(fail(input, step.expected, result))
                         }
-                        result == expected
+                        result == step.expected
                     }
                 } && solutionResult
             }
@@ -80,7 +78,7 @@ private suspend fun AnswerSheet.evaluate(
         solutions.map { (algorithm, _, expected) ->
             measureTimedValue {
                 algorithm(input).also {
-                    if (failFastAssertion) {
+                    if (failFast) {
                         check(expected == null || expected == it) { "FAIL Expected:$expected got:$it" }
                     } else if (expected != null && expected != it) {
                         println("FAIL Expected:$expected got:$it")
@@ -101,12 +99,12 @@ private fun TimedValue<List<TimedValue<Any?>>>.printResults() =
         append("Total duration: ${totalDuration.inWholeMilliseconds}ms")
     }.let { println(it) }
 
-private fun passMessage(input: Input) =
+private fun pass(input: Input) =
     buildString {
         appendLine("PASS: ${input.lines}")
     }
 
-private fun failMessage(input: Input, expected: Any, result: Any?): String =
+private fun fail(input: Input, expected: Any, result: Any?): String =
     buildString {
         appendLine("FAIL: ${input.lines}")
         appendLine("  Expected: $expected Actual: $result")
@@ -125,12 +123,17 @@ class AnswerSheet {
 
     val solutions: List<Solution> = _solutions
 
-    var failFastAssertion = false
+    var failFast = false
+
+    var ignore = false
 
     private var asserts = mutableListOf<AssertStep>()
 
     fun solution(expected: Any? = null, algorithm: Algorithm) {
-        _solutions.add(Solution(algorithm, asserts.toList(), expected))
+        if (!ignore) {
+            _solutions.add(Solution(algorithm, asserts.toList(), expected))
+        }
+        ignore = false
         asserts.clear()
     }
 

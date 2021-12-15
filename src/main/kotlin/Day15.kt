@@ -10,22 +10,25 @@ fun main() {
     day(n = 15) {
         solution(expected = 656) { input ->
             val lines = input.lines
-            val array = lines.flatMap { it.map { it.digitToInt() } }.toTypedArray()
+            val array = lines.flatMap { row -> row.map { it.digitToInt() } }.toIntArray()
             findLeastRiskyPath(array)
         }
 
         solution(expected = 2979) { input ->
-            val lines = input.lines
             val extend = 5
-            val width = lines.first().length
-            val height = lines.size
-            val array = Array(width * extend * height * extend) { 0 }
-            lines.forEachIndexed { y, row ->
+            val size = input.lines.size
+            val extendedSize = size * extend
+            val array = IntArray(extendedSize * extendedSize) { 0 }
+
+            fun Int.wrap(): Int = if (this > 9) 1 + this % 10 else this
+
+            input.lines.forEachIndexed { y, row ->
                 row.forEachIndexed { x, c ->
+                    val risk = c.digitToInt()
                     (0 until extend).forEach { ey ->
                         (0 until extend).forEach { ex ->
-                            val risk = (c.digitToInt() + ex + ey).let { if (it > 9) 1 + it % 10 else it }
-                            array[(y + ey * height) * width * extend + (x + ex * width)] = risk
+                            val index = (y + ey * size) * extendedSize + (x + ex * size)
+                            array[index] = (risk + ex + ey).wrap()
                         }
                     }
                 }
@@ -36,30 +39,31 @@ fun main() {
     }
 }
 
-private fun findLeastRiskyPath(matrix: Array<Int>): Int {
-    val scratch = IntArray(matrix.size) { Int.MAX_VALUE }
+private fun findLeastRiskyPath(array: IntArray): Int {
+    val scratch = IntArray(array.size) { Int.MAX_VALUE }
     scratch[0] = 0
 
     val queue = PriorityQueue<Int>(compareBy { scratch[it] })
     queue.add(0)
 
-    val size = sqrt(matrix.size.toFloat()).toInt()
+    val size = sqrt(array.size.toFloat()).toInt()
+    val validRange = 0 until size
 
     fun neighbors(index: Int): List<Int> =
         buildList {
             val x = index % size
             val y = index / size
 
-            if (x - 1 in 0 until size) add(y * size + (x - 1))
-            if (x + 1 in 0 until size) add(y * size + (x + 1))
-            if (y - 1 in 0 until size) add((y - 1) * size + x)
-            if (y + 1 in 0 until size) add((y + 1) * size + x)
+            if (x - 1 in validRange) add(y * size + (x - 1))
+            if (x + 1 in validRange) add(y * size + (x + 1))
+            if (y - 1 in validRange) add((y - 1) * size + x)
+            if (y + 1 in validRange) add((y + 1) * size + x)
         }
 
     while (queue.isNotEmpty()) {
         val index = queue.remove()
         neighbors(index).forEach { neighbor ->
-            val risk = scratch[index] + matrix[neighbor]
+            val risk = scratch[index] + array[neighbor]
             if (risk < scratch[neighbor]) {
                 scratch[neighbor] = risk
                 queue.add(neighbor)
