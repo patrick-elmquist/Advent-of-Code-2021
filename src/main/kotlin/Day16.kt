@@ -7,6 +7,10 @@ import util.day
 // answer #1: 917
 // answer #2: 2536453523344
 
+private const val HEADER_LEN = 6
+private const val MODE_LEN = 1
+private const val LITERAL_VALUE_PACKET = 4
+
 fun main() {
     day(n = 16) {
         solution(expected = 917) { input ->
@@ -31,14 +35,12 @@ private fun Packet.sumVersions(): Int =
         is Operator -> version + packets.sumOf { it.sumVersions() }
     }
 
-private const val HEADER_LEN = 6
-
 private fun String.parsePackets(): Pair<Packet, String> {
     val version = substring(0, 3).toInt(2)
     val typeId = substring(3, 6).toInt(2)
-    val data = drop(HEADER_LEN)
     val (result, consumed) = when (typeId) {
-        4 -> {
+        LITERAL_VALUE_PACKET -> {
+            val data = drop(HEADER_LEN)
             val groups = data.groups()
             val consumed = groups.sumOf { it.length }
             LiteralValue(
@@ -49,25 +51,25 @@ private fun String.parsePackets(): Pair<Packet, String> {
         }
 
         else -> {
-            val rest = data.drop(1)
-            when (val lenId = data.take(1).toInt(2)) {
+            val data = drop(HEADER_LEN + MODE_LEN)
+            when (val lenId = drop(HEADER_LEN).take(MODE_LEN).toInt(2)) {
                 0 -> {
-                    val (packets, consumed) = rest.parseLenPackets()
+                    val (packets, consumed) = data.parseLenPackets()
                     Operator(
                         typeId = typeId,
                         version = version,
                         lenId = lenId,
                         packets = packets
-                    ) to HEADER_LEN + 1 + 15 + consumed
+                    ) to HEADER_LEN + MODE_LEN + consumed
                 }
                 else -> {
-                    val (packets, consumed) = rest.parseNbrOfPackets()
+                    val (packets, consumed) = data.parseNbrOfPackets()
                     Operator(
                         typeId = typeId,
                         version = version,
                         lenId = lenId,
                         packets = packets
-                    ) to HEADER_LEN + 1 + 11 + consumed
+                    ) to HEADER_LEN + MODE_LEN + consumed
                 }
             }
         }
@@ -76,38 +78,39 @@ private fun String.parsePackets(): Pair<Packet, String> {
 }
 
 private fun String.parseLenPackets(): Pair<List<Packet>, Int> {
-    val len = take(15).toInt(2)
+    val offset = 15
+    val desiredLength = take(offset).toInt(2)
+    var consumed = 0
+    var remaining = drop(offset)
     return buildList {
-        var left = this@parseLenPackets.drop(15)
-        var consumed = 0
-        while (consumed < len) {
-            val (packet, remaining) = left.parsePackets()
+        while (consumed < desiredLength) {
+            val (packet, unused) = remaining.parsePackets()
             add(packet)
-            consumed += (left.length - remaining.length)
-            left = remaining
+            consumed += (remaining.length - unused.length)
+            remaining = unused
         }
-    } to len
+    } to offset + consumed
 }
 
 private fun String.parseNbrOfPackets(): Pair<List<Packet>, Int> {
-    val nbr = take(11).toInt(2)
+    val offset = 11
+    val desiredNumber = take(offset).toInt(2)
     var consumed = 0
+    var remaining = drop(offset)
     return buildList {
-        var left = this@parseNbrOfPackets.drop(11)
-        var count = 0
-        while (count < nbr) {
-            val (packet, remaining) = left.parsePackets()
+        repeat(desiredNumber) {
+            val (packet, unused) = remaining.parsePackets()
             add(packet)
-            consumed += (left.length - remaining.length)
-            left = remaining
-            count++
+            consumed += (remaining.length - unused.length)
+            remaining = unused
         }
-    } to consumed
+    } to offset + consumed
 }
 
 private fun String.groups(): List<String> {
+    val chunkSize = 5
     var done = false
-    return chunkedSequence(5).takeWhile {
+    return chunkedSequence(chunkSize).takeWhile {
         when {
             done -> false
             else -> {
