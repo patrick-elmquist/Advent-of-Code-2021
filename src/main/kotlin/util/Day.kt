@@ -24,7 +24,8 @@ fun day(
             try {
                 validatedSolutions.evaluate(input = Input(day = n)).printResults()
             } catch (e: Exception) {
-                println(e.message)
+                println("Exception: ${e.message}")
+                e.printStackTrace()
             }
         }
         .onFailure { reason ->
