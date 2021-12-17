@@ -24,7 +24,6 @@ class Sheet {
     private val tests = mutableListOf<Test>()
     val parts: MutableList<Part> = mutableListOf()
 
-    var expected: Any? = null
     var breakAdded: Boolean = false
     var ignore: Boolean = false
 
@@ -35,7 +34,7 @@ class Sheet {
     }
 
     fun part1(expected: Any? = null, block: (Input) -> Any?) {
-        check(parts.isEmpty())
+        check(parts.none { it.number == 1 })
         if (!ignore) {
             parts += Part(1, block, expected, tests.toList())
         }
@@ -44,7 +43,7 @@ class Sheet {
     }
 
     fun part2(expected: Any? = null, block: (Input) -> Any?) {
-        check(parts.single().number == 1)
+        check(parts.none { it.number == 2 })
         if (!ignore) {
             parts += Part(2, block, expected, tests.toList())
         }

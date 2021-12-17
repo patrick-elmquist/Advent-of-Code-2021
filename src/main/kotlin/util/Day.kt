@@ -17,14 +17,17 @@ private inline fun Sheet.verifyAndRun(input: Input) {
         .forEach { (part, result) ->
             print("Answer #${part.number}: ")
             result
-                .onSuccess { println("${it.output} (${it.time.inWholeMilliseconds}ms)") }
-                .onFailure { println(it.message) }
+                .onSuccess {
+                    println("${it.output} (${it.time.inWholeMilliseconds}ms)")
+                }
+                .onFailure {
+                    println(it.message)
+                }
         }
 }
 
 private inline fun Part.evaluate(
-    input: Input,
-    expected: Any? = null
+    input: Input
 ): Result<Answer> {
     if (tests.isNotEmpty()) println("Verifying Part #${number}")
 
@@ -48,11 +51,16 @@ private inline fun Part.evaluate(
 
     if (!testsPassed) return failure("One or more tests failed.")
 
-    val result = runWithTimer(input)
-    return if (expected == null || result.output == expected) {
-        success(result)
-    } else {
-        failure("FAIL Expected:$expected actual:$result")
+    return try {
+        val result = runWithTimer(input)
+        if (expected == null || result.output == expected) {
+            success(result)
+        } else {
+            failure("FAIL Expected:$expected actual:${result.output}")
+        }
+    } catch (e: Throwable) {
+        e.printStackTrace()
+        failure(e)
     }
 }
 
@@ -60,5 +68,5 @@ private inline fun Part.runWithTimer(input: Input): Answer =
     measureTimedValue { algorithm(input) }.let { result -> Answer(number, result.value, result.duration) }
 
 private inline fun success(answer: Answer) = Result.success(answer)
-
 private inline fun failure(message: String) = Result.failure<Answer>(AssertionError(message))
+private inline fun failure(throwable: Throwable) = Result.failure<Answer>(throwable)
