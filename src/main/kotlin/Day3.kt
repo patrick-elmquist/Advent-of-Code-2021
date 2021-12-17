@@ -7,13 +7,13 @@ import util.extensions.isBitSet
 
 fun main() {
     day(n = 3) {
-        solution(expected = 4006064) { input ->
+        part1(expected = 4006064) { input ->
             val ints = input.lines.map { it.toInt(radix = 2) }
             val bits = input.lines.first().length
             ints.calculateGammaRate(bits) * ints.calculateEpsilonRate(bits)
         }
 
-        solution(expected = 5941884) { input ->
+        part2(expected = 5941884) { input ->
             val ints = input.lines.map { it.toInt(radix = 2) }
             val bits = input.lines.first().length
             ints.determineOxygenRating(index = bits - 1) * ints.determineCo2Rating(index = bits - 1)

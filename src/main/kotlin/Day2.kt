@@ -5,7 +5,7 @@ import util.day
 
 fun main() {
     day(n = 2) {
-        solution(expected = 1427868) { input ->
+        part1(expected = 1427868) { input ->
             input.lines
                 .mapCommands()
                 .fold(0 to 0) { (depth, distance), (command, value) ->
@@ -18,7 +18,7 @@ fun main() {
                 }.let { (depth, distance) -> depth * distance }
         }
 
-        solution(expected = 1568138742) { input ->
+        part2(expected = 1568138742) { input ->
             input.lines
                 .mapCommands()
                 .fold(Triple(0, 0, 0)) { (depth, distance, aim), (command, value) ->

@@ -8,7 +8,7 @@ import util.neighbors
 
 fun main() {
     day(n = 9) {
-        solution(expected = 508) { input ->
+        part1(expected = 508) { input ->
             val points = input.parsePointHeightMap()
             points.filter { (point, height) ->
                 point.neighbors()
@@ -17,7 +17,7 @@ fun main() {
             }.values.sumOf { height -> 1 + height }
         }
 
-        solution(expected = 1564640) { input ->
+        part2(expected = 1564640) { input ->
             val points = input.parsePointHeightMap()
             val visited = mutableSetOf<Point>()
             points.keys

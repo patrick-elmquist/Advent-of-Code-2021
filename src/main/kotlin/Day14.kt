@@ -7,8 +7,8 @@ import util.extensions.splitOnBlank
 
 fun main() {
     day(n = 14) {
-        testInput assert 1588
-        solution(expected = 2587) { input ->
+        testInput expect 1588
+        part1(expected = 2587) { input ->
             val (template, rules) = input.lines.splitOnBlank().let { (t, r) ->
                 t.first() to r.associate {
                     it.split(" -> ").let { it.first() to it.last().first() }
@@ -32,8 +32,8 @@ fun main() {
             result.values.maxOf { it } - result.values.minOf { it }
         }
 
-        testInput assert 2188189693529L
-        solution(expected = 3318837563123L) { input ->
+        testInput expect 2188189693529L
+        part2(expected = 3318837563123L) { input ->
             val (template, rules) = input.lines.splitOnBlank().let { (t, r) ->
                 t.first() to r.associate {
                     it.split(" -> ").let { it.first() to it.last().first() }

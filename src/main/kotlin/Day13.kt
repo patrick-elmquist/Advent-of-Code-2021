@@ -1,19 +1,26 @@
-import Fold.*
-import util.*
+
+import Fold.Left
+import Fold.Up
+import util.Input
+import util.Point
+import util.day
 import util.extensions.match
 import util.extensions.splitOnBlank
+import util.invoke
+import util.xRange
+import util.yRange
 
 // answer #1: 618
 // answer #2: ALREKFKU
 
 fun main() {
     day(n = 13) {
-        solution(expected = 618) { input ->
+        part1(expected = 618) { input ->
             val (sheet, folds) = input.parseSheetAndFolds()
             sheet.fold(folds.first()).count()
         }
 
-        solution { input ->
+        part2 { input ->
             val (defaultSheet, folds) = input.parseSheetAndFolds()
             folds.fold(defaultSheet) { sheet, direction -> sheet.fold(direction) }.print()
             "Check print above!"

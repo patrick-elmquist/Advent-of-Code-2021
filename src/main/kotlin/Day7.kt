@@ -8,12 +8,12 @@ import kotlin.math.abs
 
 fun main() {
     day(n = 7) {
-        solution(expected = 342730) { input ->
+        part1(expected = 342730) { input ->
             val (crabs, positions) = input.parse()
             positions.minOfOrNull { crabs.constantCostToPoint(it) }
         }
 
-        solution(expected = 92335207) { input ->
+        part2(expected = 92335207) { input ->
             val (crabs, positions) = input.parse()
             positions.minOfOrNull { crabs.increasingCostToPoint(it) }
         }

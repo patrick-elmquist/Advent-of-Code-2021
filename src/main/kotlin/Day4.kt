@@ -13,8 +13,8 @@ private val WHITE_SPACE_REGEX = "\\s+".toRegex()
 
 fun main() {
     day(n = 4) {
-        testInput assert 4512
-        solution(expected = 35670) { input ->
+        testInput expect 4512
+        part1(expected = 35670) { input ->
             val (numbers, boards) = input.parseNumbersAndBoards()
 
             val (winner, finalNumber) = numbers.firstNotNullOf { number ->
@@ -29,8 +29,8 @@ fun main() {
             winner.filter { it != MARKED }.sum() * finalNumber
         }
 
-        testInput assert 1924
-        solution(expected = 22704) { input ->
+        testInput expect 1924
+        part2(expected = 22704) { input ->
             val (numbers, boards) = input.parseNumbersAndBoards()
 
             val winners = mutableListOf<Pair<List<Int>,Int>>()

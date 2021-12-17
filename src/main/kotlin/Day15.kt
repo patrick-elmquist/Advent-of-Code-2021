@@ -8,13 +8,13 @@ import kotlin.math.sqrt
 
 fun main() {
     day(n = 15) {
-        solution(expected = 656) { input ->
+        part1(expected = 656) { input ->
             val lines = input.lines
             val array = lines.flatMap { row -> row.map { it.digitToInt() } }.toIntArray()
             findLeastRiskyPath(array)
         }
 
-        solution(expected = 2979) { input ->
+        part2(expected = 2979) { input ->
             val extend = 5
             val size = input.lines.size
             val extendedSize = size * extend

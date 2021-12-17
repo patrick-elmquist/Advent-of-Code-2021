@@ -10,11 +10,11 @@ private const val RESET_INDEX = 6
 
 fun main() {
     day(n = 6) {
-        solution(expected = 360761L) { input ->
+        part1(expected = 360761L) { input ->
             algorithm(input, days = 80)
         }
 
-        solution(expected = 1632779838045L) { input ->
+        part2(expected = 1632779838045L) { input ->
             algorithm(input, days = 256)
         }
     }

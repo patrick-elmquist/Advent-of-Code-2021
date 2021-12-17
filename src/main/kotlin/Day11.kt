@@ -10,12 +10,12 @@ private typealias Matrix = MutableMap<Point, Int>
 
 fun main() {
     day(n = 11) {
-        solution(expected = 1773) { input ->
+        part1(expected = 1773) { input ->
             val matrix = input.parseMatrix()
             generateSequence { matrix.nextStep() }.take(100).sum()
         }
 
-        solution(expected = 494) { input ->
+        part2(expected = 494) { input ->
             val matrix = input.parseMatrix()
             1 + generateSequence { matrix.nextStep().takeUnless { matrix.isAllZeros() } }.count()
         }

@@ -9,7 +9,7 @@ private val PARSE_REGEX = """(\d+),(\d+) -> (\d+),(\d+)""".toRegex()
 
 fun main() {
     day(n = 5) {
-        solution(expected = 7142) { input ->
+        part1(expected = 7142) { input ->
             input.lines
                 .parseStartAndEndPoints()
                 .filter { (start, end) -> start.x == end.x || start.y == end.y }
@@ -18,7 +18,7 @@ fun main() {
                 .count { it.value > 1 }
         }
 
-        solution(expected = 20012) { input ->
+        part2(expected = 20012) { input ->
             input.lines.parseStartAndEndPoints()
                 .mapLinesToPoints()
                 .groupOverlappingPoints()

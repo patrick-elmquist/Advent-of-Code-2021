@@ -6,14 +6,14 @@ import util.day
 
 fun main() {
     day(n = 8) {
-        solution(expected = 409) { input ->
+        part1(expected = 409) { input ->
             input.parsePatternsAndOutputs()
                 .sumOf { (_, output) ->
                     output.count { number -> number.size in listOf(2, 3, 4, 7) }
                 }
         }
 
-        solution(expected = 1024649) { input ->
+        part2(expected = 1024649) { input ->
             input.parsePatternsAndOutputs()
                 .sumOf { (patterns, output) ->
                     val numbers = MutableList(10) { emptySet<Char>() }

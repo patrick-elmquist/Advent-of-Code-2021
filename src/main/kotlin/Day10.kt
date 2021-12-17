@@ -5,7 +5,7 @@ import util.day
 
 fun main() {
     day(n = 10) {
-        solution(expected = 315693) { input ->
+        part1(expected = 315693) { input ->
             val pointsLookup = mapOf(')' to 3, ']' to 57, '}' to 1197, '>' to 25137)
             input.lines
                 .map { line -> line.analyzeChunks() }
@@ -14,7 +14,7 @@ fun main() {
                 .sum()
         }
 
-        solution(expected = 1870887234L) { input ->
+        part2(expected = 1870887234L) { input ->
             val pointsLookup = mapOf(')' to 1, ']' to 2, '}' to 3, '>' to 4)
             input.lines
                 .map { it.analyzeChunks() }

@@ -13,11 +13,11 @@ private const val LITERAL_VALUE_PACKET = 4
 
 fun main() {
     day(n = 16) {
-        solution(expected = 917) { input ->
+        part1(expected = 917) { input ->
             input.toBinary().parsePackets().first.sumVersions()
         }
 
-        solution(expected = 2536453523344L) { input ->
+        part2(expected = 2536453523344L) { input ->
             input.toBinary().parsePackets().first.resolve()
         }
     }

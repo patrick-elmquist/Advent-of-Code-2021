@@ -6,13 +6,13 @@ import util.day
 
 fun main() {
     day(n = 12) {
-        solution(expected = 3563) { input ->
+        part1(expected = 3563) { input ->
             val caveMap = input.parseCaveMap()
             val allowedToVisit = caveMap.keys.filter { name -> name.all { it.isLowerCase() } }.toList()
             caveMap.countPathsToEndFrom(cave = "start", allowedToVisit).size
         }
 
-        solution(expected = 105453) { input ->
+        part2(expected = 105453) { input ->
             val caveMap = input.parseCaveMap()
             val smallCaves = caveMap.keys.filter { name -> name.all { it.isLowerCase() } }
 
