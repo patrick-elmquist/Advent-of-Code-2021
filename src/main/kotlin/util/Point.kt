@@ -7,6 +7,12 @@ data class Point(val x: Int, val y: Int) {
     companion object
 }
 
+data class Point3D(val x: Int, val y: Int, val z: Int) {
+    operator fun plus(point: Point3D) = Point3D(x + point.x, y + point.y, z + point.z)
+    operator fun minus(point: Point3D) = Point3D(x - point.x, y - point.y, z - point.z)
+    companion object
+}
+
 fun Point.neighbors(diagonal: Boolean = false): List<Point> =
     buildList {
         add(copy(x = x - 1))
