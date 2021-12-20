@@ -6,9 +6,8 @@ import util.Point
 import util.day
 import util.extensions.match
 import util.extensions.splitOnBlank
-import util.invoke
-import util.xRange
-import util.yRange
+import util.extensions.xRange
+import util.extensions.yRange
 
 // answer #1: 618
 // answer #2: ALREKFKU

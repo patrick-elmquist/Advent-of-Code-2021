@@ -1,5 +1,6 @@
-
+import util.Input
 import util.day
+import util.extensions.repeat
 import util.extensions.splitOnBlank
 
 // answer #1: 2587
@@ -7,84 +8,62 @@ import util.extensions.splitOnBlank
 
 fun main() {
     day(n = 14) {
-        testInput expect 1588
-        part1(expected = 2587) { input ->
-            val (template, rules) = input.lines.splitOnBlank().let { (t, r) ->
-                t.first() to r.associate {
-                    it.split(" -> ").let { it.first() to it.last().first() }
-                }
-            }
-
-            var t = template
-            repeat(10) {
-                t = t.toList().windowed(2, partialWindows = true) { window ->
-                    if (window.size == 1) {
-                        listOf(window.first())
-                    } else {
-                        val toBeInserted = rules.getValue(window.joinToString(""))
-                        listOf(window.first(), toBeInserted)
-                    }
-                }.flatten().joinToString("")
-            }
-
-            val result = t.groupingBy { it }.eachCount()
-
-            result.values.maxOf { it } - result.values.minOf { it }
+        part1(expected = 2587L) { input ->
+            val (template, rules) = input.parseTemplateAndRules()
+            val polymer = runInsertionSteps(n = 10, template, rules)
+            polymer.values.maxOf { it } - polymer.values.minOf { it }
         }
 
-        testInput expect 2188189693529L
         part2(expected = 3318837563123L) { input ->
-            val (template, rules) = input.lines.splitOnBlank().let { (t, r) ->
-                t.first() to r.associate {
-                    it.split(" -> ").let { it.first() to it.last().first() }
-                }
-            }
-
-            var map = mutableMapOf<String, Long>()
-            template.zipWithNext().map { "${it.first}${it.second}" }.forEach {
-                map[it] = map.getOrDefault(it, 0) + 1L
-            }
-            repeat(40) {
-                val keys = map.keys
-                val newMap = mutableMapOf<String, Long>()
-                keys.forEach { key ->
-                    val next = "${key.first()}${rules.getValue(key)}"
-                    val next2 = "${rules.getValue(key)}${key.last()}"
-                    newMap[next] = newMap.getOrDefault(next, 0L) + map.getValue(key)
-                    newMap[next2] = newMap.getOrDefault(next2, 0L) + map.getValue(key)
-                }
-                map = newMap
-            }
-            val countMap = mutableMapOf<Char, Long>()
-            map.forEach { (key, value) ->
-                key.take(1).forEach { c ->
-                    countMap[c] = countMap.getOrDefault(c, 0L) + value
-                }
-            }
-            countMap[template.last()] = countMap.getOrDefault(template.last(), 0L) + 1L
-
-            countMap.values.maxOf { it } - countMap.values.minOf { it }
+            val (template, rules) = input.parseTemplateAndRules()
+            val polymer = runInsertionSteps(n = 40, template, rules)
+            polymer.values.maxOf { it } - polymer.values.minOf { it }
         }
     }
 }
 
-private val testInput = """
-NNCB
+private fun Input.parseTemplateAndRules() =
+    lines.splitOnBlank().let { (template, rules) ->
+        template.first() to rules.associate { rule ->
+            rule.split(" -> ").let { it.first() to it.last().first() }
+        }
+    }
 
-CH -> B
-HH -> N
-CB -> H
-NH -> C
-HB -> C
-HC -> B
-HN -> C
-NN -> C
-BH -> H
-NC -> B
-NB -> B
-BN -> B
-BB -> N
-BC -> B
-CC -> N
-CN -> C
-""".trimIndent()
+private fun runInsertionSteps(n: Int, template: String, rules: Map<String, Char>): Map<Char, Long> {
+    // Add the counts from the initial template
+    val initialCount = template.zipWithNext()
+        .map { "${it.first}${it.second}" }
+        .groupingBy { it }
+        .eachCount()
+        .mapValues { it.value.toLong() }
+
+    // Apply the insertion steps N times
+    val count = initialCount.repeat(n) { state ->
+        state.keys
+            .flatMap { key -> createPairs(key, rules, state) }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { it.value.sum() }
+    }
+
+    return buildMap {
+        count.forEach { (key, value) -> merge(key.first(), value, ::sum) }
+        // Only the first char is counted in the forEach, add the last one manually
+        merge(template.last(), 1L, ::sum)
+    }
+}
+
+private fun createPairs(
+    key: String,
+    rules: Map<String, Char>,
+    state: Map<String, Long>
+): List<Pair<String, Long>> =
+    buildList {
+        val start = key.first()
+        val end = key.last()
+        val toInsert = rules.getValue(key)
+        val count = state.getValue(key)
+        add("$start$toInsert" to count)
+        add("$toInsert$end" to count)
+    }
+
+private fun sum(a: Long, b: Long) = a + b

@@ -14,8 +14,8 @@ private inline fun collectSolutions(block: Sheet.() -> Unit): Sheet =
 
 private inline fun Sheet.verifyAndRun(input: Input) {
     parts.forEach { part ->
-        print("Answer #${part.number}: ")
         val result = part.evaluate(input)
+        print("Answer #${part.number}: ")
         result
             .onSuccess {
                 println("${it.output} (${it.time.inWholeMilliseconds}ms)")
@@ -23,6 +23,7 @@ private inline fun Sheet.verifyAndRun(input: Input) {
             .onFailure {
                 println(it.message)
             }
+        if (part.tests.isNotEmpty()) println()
     }
 }
 
@@ -46,8 +47,6 @@ private inline fun Part.evaluate(
 
         testPassed
     }
-
-    if (tests.isNotEmpty()) println()
 
     if (!testsPassed) return failure("One or more tests failed.")
 

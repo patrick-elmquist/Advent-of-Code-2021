@@ -29,7 +29,7 @@ private fun Input.parseMatrix() =
 
 private fun Matrix.nextStep() = incrementLevels().executeFlashes().resetFlashed()
 
-private fun Matrix.incrementLevels() = onEach { set(it.key, getValue(it.key) + 1) }
+private fun Matrix.incrementLevels() = onEach { merge(it.key, 1, Integer::sum) }
 
 private fun Matrix.executeFlashes(): Matrix {
     val visited = mutableSetOf<Point>()
@@ -43,7 +43,7 @@ private fun Matrix.executeFlashes(): Matrix {
 
         queue += octopus.neighbors(diagonal = true)
             .filter { neighbor -> neighbor in this }
-            .onEach { neighbor -> set(neighbor, getValue(neighbor) + 1) }
+            .onEach { neighbor -> merge(neighbor, 1, Integer::sum) }
             .filter { getValue(it) > 9 && it !in visited }
     }
     return this

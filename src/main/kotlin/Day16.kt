@@ -86,7 +86,7 @@ private fun String.parseLenPackets(): Pair<List<Packet>, Int> {
         while (consumed < desiredLength) {
             val (packet, unused) = remaining.parsePackets()
             add(packet)
-            consumed += (remaining.length - unused.length)
+            consumed += remaining.length - unused.length
             remaining = unused
         }
     } to offset + consumed
@@ -101,7 +101,7 @@ private fun String.parseNbrOfPackets(): Pair<List<Packet>, Int> {
         repeat(desiredNumber) {
             val (packet, unused) = remaining.parsePackets()
             add(packet)
-            consumed += (remaining.length - unused.length)
+            consumed += remaining.length - unused.length
             remaining = unused
         }
     } to offset + consumed

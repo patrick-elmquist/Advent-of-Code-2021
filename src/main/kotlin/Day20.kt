@@ -2,10 +2,11 @@
 import util.Input
 import util.Point
 import util.day
+import util.extensions.repeat
 import util.extensions.splitOnBlank
+import util.extensions.xRange
+import util.extensions.yRange
 import util.neighbors
-import util.xRange
-import util.yRange
 
 // answer #1: 5259
 // answer #2: 15287
@@ -38,7 +39,7 @@ private fun Input.parseLookupAndImage() =
     }
 
 private fun Map<Point, Int>.enhance(n: Int, lookup: IntArray) =
-    repeatWithValue(times = n, initial = this to 0) { (image, void) ->
+    (this to 0).repeat(n = n) { (image, void) ->
         val pixels = image.keys
 
         // Grow the canvas 1 step in each direction
@@ -61,8 +62,5 @@ private fun Map<Point, Int>.enhance(n: Int, lookup: IntArray) =
 // Calculate a maxed out block to determine what it will end up as the next iteration
 private fun calculateNextVoid(lookup: IntArray, void: Int): Int =
     (0 until 9).map { void }.toBinary().let { lookup[it] }
-
-private fun <T> repeatWithValue(times: Int, initial: T, block: (T) -> T): T =
-    (0 until times).fold(initial) { acc, _ -> block(acc) }
 
 private fun List<Int>.toBinary() = joinToString("").toInt(2)

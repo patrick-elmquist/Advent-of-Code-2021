@@ -1,15 +1,14 @@
 package util
 
-import util.extensions.minToMax
-
+/**
+ * Class representing a point in 2 dimensions
+ */
 data class Point(val x: Int, val y: Int) {
-    operator fun plus(point: Point) = Point(x + point.x, y + point.y)
-    companion object
-}
+    constructor(x: String, y: String) : this(x.toInt(), y.toInt())
 
-data class Point3D(val x: Int, val y: Int, val z: Int) {
-    operator fun plus(point: Point3D) = Point3D(x + point.x, y + point.y, z + point.z)
-    operator fun minus(point: Point3D) = Point3D(x - point.x, y - point.y, z - point.z)
+    operator fun plus(point: Point) = Point(x + point.x, y + point.y)
+    operator fun minus(point: Point) = Point(x - point.x, y - point.y)
+
     companion object
 }
 
@@ -28,9 +27,16 @@ fun Point.neighbors(diagonal: Boolean = false, includeSelf: Boolean = false): Li
         if (diagonal) add(Point(x + 1, y + 1))
     }
 
-operator fun Point.Companion.invoke(x: String, y: String) =
-    Point(x.toInt(), y.toInt())
+/**
+ * Class representing a point in 3 dimensions
+ */
+data class Point3D(val x: Int, val y: Int, val z: Int) {
+    constructor(x: String, y: String, z: String) : this(x.toInt(), y.toInt(), z.toInt())
+    constructor(array: IntArray) : this(array[0], array[1], array[2])
 
-val Collection<Point>.xRange get() = map { it.x }.minToMax()
+    operator fun plus(point: Point3D) = Point3D(x + point.x, y + point.y, z + point.z)
+    operator fun minus(point: Point3D) = Point3D(x - point.x, y - point.y, z - point.z)
 
-val Collection<Point>.yRange get() = map { it.y }.minToMax()
+    companion object
+}
+

@@ -28,7 +28,7 @@ fun main() {
 }
 
 private fun List<String>.parseStartAndEndPoints(): List<Pair<Point, Point>> =
-    map { PARSE_REGEX.match(it) { (x1, y1, x2, y2) -> Point(x1.toInt(), y1.toInt()) to Point(x2.toInt(), y2.toInt()) } }
+    map { PARSE_REGEX.match(it) { (x1, y1, x2, y2) -> Point(x1, y1) to Point(x2, y2) } }
 
 private fun List<Pair<Point, Point>>.mapLinesToPoints() =
     flatMap { (start, end) ->
