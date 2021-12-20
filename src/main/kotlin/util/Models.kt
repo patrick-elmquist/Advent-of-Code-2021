@@ -6,7 +6,8 @@ data class Part(
     val number: Int,
     val algorithm: (Input) -> Any?,
     val expected: Any?,
-    val tests: List<Test>
+    val tests: List<Test>,
+    val testOnly: Boolean
 )
 
 data class Test(
@@ -36,7 +37,7 @@ class Sheet {
     fun part1(expected: Any? = null, block: (Input) -> Any?) {
         check(parts.none { it.number == 1 })
         if (!ignore) {
-            parts += Part(1, block, expected, tests.toList())
+            parts += Part(1, block, expected, tests.toList(), breakAdded)
         }
         ignore = breakAdded
         tests.clear()
@@ -45,7 +46,7 @@ class Sheet {
     fun part2(expected: Any? = null, block: (Input) -> Any?) {
         check(parts.none { it.number == 2 })
         if (!ignore) {
-            parts += Part(2, block, expected, tests.toList())
+            parts += Part(2, block, expected, tests.toList(), breakAdded)
         }
         ignore = breakAdded
         tests.clear()

@@ -13,17 +13,17 @@ private inline fun collectSolutions(block: Sheet.() -> Unit): Sheet =
     Sheet().apply(block)
 
 private inline fun Sheet.verifyAndRun(input: Input) {
-    parts.map { part -> part to part.evaluate(input) }
-        .forEach { (part, result) ->
-            print("Answer #${part.number}: ")
-            result
-                .onSuccess {
-                    println("${it.output} (${it.time.inWholeMilliseconds}ms)")
-                }
-                .onFailure {
-                    println(it.message)
-                }
-        }
+    parts.forEach { part ->
+        print("Answer #${part.number}: ")
+        val result = part.evaluate(input)
+        result
+            .onSuccess {
+                println("${it.output} (${it.time.inWholeMilliseconds}ms)")
+            }
+            .onFailure {
+                println(it.message)
+            }
+    }
 }
 
 private inline fun Part.evaluate(
@@ -50,6 +50,8 @@ private inline fun Part.evaluate(
     if (tests.isNotEmpty()) println()
 
     if (!testsPassed) return failure("One or more tests failed.")
+
+    if (testOnly) return failure("Break added")
 
     return try {
         val result = runWithTimer(input)

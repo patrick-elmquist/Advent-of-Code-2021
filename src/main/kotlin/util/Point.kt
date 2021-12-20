@@ -13,19 +13,19 @@ data class Point3D(val x: Int, val y: Int, val z: Int) {
     companion object
 }
 
-fun Point.neighbors(diagonal: Boolean = false): List<Point> =
+fun Point.neighbors(diagonal: Boolean = false, includeSelf: Boolean = false): List<Point> =
     buildList {
-        add(copy(x = x - 1))
-        add(copy(x = x + 1))
+        if (diagonal) add(Point(x - 1, y - 1))
         add(copy(y = y - 1))
-        add(copy(y = y + 1))
+        if (diagonal) add(Point(x + 1, y - 1))
 
-        if (diagonal) {
-            add(Point(x - 1, y - 1))
-            add(Point(x - 1, y + 1))
-            add(Point(x + 1, y - 1))
-            add(Point(x + 1, y + 1))
-        }
+        add(copy(x = x - 1))
+        if (includeSelf) add(this@neighbors)
+        add(copy(x = x + 1))
+
+        if (diagonal) add(Point(x - 1, y + 1))
+        add(copy(y = y + 1))
+        if (diagonal) add(Point(x + 1, y + 1))
     }
 
 operator fun Point.Companion.invoke(x: String, y: String) =
