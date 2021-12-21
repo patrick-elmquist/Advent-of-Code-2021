@@ -25,6 +25,7 @@ fun main() {
 private fun Input.parseTemplateAndRules() =
     lines.splitOnBlank().let { (template, rules) ->
         template.first() to rules.associate { rule ->
+            // TODO replace with regex
             rule.split(" -> ").let { it.first() to it.last().first() }
         }
     }
