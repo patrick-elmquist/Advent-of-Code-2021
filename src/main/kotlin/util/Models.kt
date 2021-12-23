@@ -28,29 +28,9 @@ class Sheet {
     var breakAdded: Boolean = false
     var ignore: Boolean = false
 
-    infix fun String.expect(expected: Any?) {
-        if (!breakAdded) {
-            tests += Test(this, expected)
-        }
-    }
+    fun part1(expected: Any? = null, block: (Input) -> Any?) = addPart(1, expected, block)
 
-    fun part1(expected: Any? = null, block: (Input) -> Any?) {
-        check(parts.none { it.number == 1 })
-        if (!ignore) {
-            parts += Part(1, block, expected, tests.toList(), breakAdded)
-        }
-        ignore = breakAdded
-        tests.clear()
-    }
-
-    fun part2(expected: Any? = null, block: (Input) -> Any?) {
-        check(parts.none { it.number == 2 })
-        if (!ignore) {
-            parts += Part(2, block, expected, tests.toList(), breakAdded)
-        }
-        ignore = breakAdded
-        tests.clear()
-    }
+    fun part2(expected: Any? = null, block: (Input) -> Any?) = addPart(2, expected, block)
 
     @Suppress("unused")
     fun stop() {
@@ -60,5 +40,21 @@ class Sheet {
     @Suppress("unused")
     fun ignore() {
         ignore = true
+    }
+
+    @Suppress("unused")
+    infix fun String.expect(expected: Any?) {
+        if (!breakAdded) {
+            tests += Test(this, expected)
+        }
+    }
+
+    private fun addPart(n: Int, expected: Any?, block: (Input) -> Any?) {
+        check(parts.none { it.number == n })
+        if (!ignore) {
+            parts += Part(n, block, expected, tests.toList(), breakAdded)
+        }
+        ignore = breakAdded
+        tests.clear()
     }
 }
