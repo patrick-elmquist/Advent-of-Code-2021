@@ -13,7 +13,7 @@ import kotlin.math.max
 fun main() {
     day(n = 18) {
         part1(expected = 3675) { input ->
-            input.parseNumbers().reduce { a, b -> a + b}.magnitude()
+            input.parseNumbers().reduce(Number::sum).magnitude()
         }
 
         part2(expected = 4650) { input ->
@@ -127,6 +127,10 @@ private sealed class Number(var parent: Pair? = null) {
     }
 
     operator fun plus(other: Number): Number = Pair(this, other).reduce()
+
+    companion object {
+        fun sum(a: Number, b: Number) = a + b
+    }
 }
 
 

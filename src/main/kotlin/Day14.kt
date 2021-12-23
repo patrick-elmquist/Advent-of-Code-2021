@@ -1,5 +1,6 @@
 import util.Input
 import util.day
+import util.extensions.match
 import util.extensions.repeat
 import util.extensions.splitOnBlank
 
@@ -22,11 +23,12 @@ fun main() {
     }
 }
 
+private val regex = """([A-Z]{2}) -> ([A-Z])""".toRegex()
+
 private fun Input.parseTemplateAndRules() =
     lines.splitOnBlank().let { (template, rules) ->
         template.first() to rules.associate { rule ->
-            // TODO replace with regex
-            rule.split(" -> ").let { it.first() to it.last().first() }
+            regex.match(rule) { (a, b) -> a to b.first() }
         }
     }
 

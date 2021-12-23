@@ -4,6 +4,11 @@ package util
 
 import kotlin.time.measureTimedValue
 
+/**
+ * TODO for next year:
+ * - Fetch the input files
+ * - Create a new Day with a gradle task
+ */
 fun day(
     n: Int,
     block: Sheet.() -> Unit
