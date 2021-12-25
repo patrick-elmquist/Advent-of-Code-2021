@@ -11,7 +11,7 @@ import util.log
 // answer #1:
 // answer #2:
 
-// Z must always be > 0 to not break the Mod
+// Z must always be > 0 to not break the M
 fun main() {
     day(n = 24) {
         part1 { input ->
@@ -35,7 +35,7 @@ fun main() {
 
             val alu = Alu()
             val input = "55555555555555".toList().map { it.digitToInt().toLong() }.log()
-            alu.run(input, instructions).log().getValue('z')
+            alu.run(input, instructions)
         }
     }
 }
@@ -58,7 +58,6 @@ private class Alu() {
             variables += it.run(variables)
 
             if (it is Inp) variables.remove('i').also {
-                variables.log("var after input:$it :")
                 println()
             }
         }
