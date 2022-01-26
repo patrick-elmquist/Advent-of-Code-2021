@@ -42,5 +42,5 @@ private fun Map<Point, Char>.sequence(width: Int, height: Int) =
             }
         movingDown.forEach { (from, to) -> newState[to] = newState.remove(from)!! }
 
-        if (movingDown.size + movingRight.size == 0) null else newState
+        if (movingDown.size + movingRight.size > 0) newState else null
     }
