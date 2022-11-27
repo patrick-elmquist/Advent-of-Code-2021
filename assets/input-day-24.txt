@@ -1,60 +1,57 @@
-inp w       w
-mul x 0     x = 0
-add x z     x = z
-mod x 26    x = z % 26
-div z 1     nop
-add x 11    x = (z % 26) + 11
-eql x w     x = 0
-eql x 0     x = 1
-mul y 0     y = 0
-add y 25    y = 25
-mul y x     y = 25
-add y 1     y = 26
-mul z y     z = 26z
-mul y 0     y = 0
-add y w     y = w
-add y 14    y = w + 14
-mul y x     y = w + 14
-add z y     z = w + 14
-
-inp w       w
-mul x 0     x = 0
-add x z     x = z
-mod x 26    x = z % 26
-div z 1     z = z
-add x 13    x = (z % 26) + 13
-eql x w     x = 0
-eql x 0     x = 1
-mul y 0     y = 0
-add y 25    y = 25
-mul y x     y = 25
-add y 1     y = 26
-mul z y     z = 26z
-mul y 0     y = 0
-add y w     y = w
-add y 8     y = w + 8
-mul y x     y = w + 8
-add z y     z = w + 8
-
 inp w
-mul x 0     x = 0
-add x z     x = z
-mod x 26    x = z % 26
-div z 1     z = z
-add x 11    x = (z % 26) + 11
-eql x w     x = 0
-eql x 0     x = 1
-mul y 0     y = 0
-add y 25    y = 25
-mul y x     y = 26
-add y 1     y = 27
-mul z y     z = 27z
-mul y 0     y = 0
-add y w     y = w
-add y 4     y = w + 4
-mul y x     y = w + 4
-add z y     z = w + 4
-
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 11
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 14
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 13
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 8
+mul y x
+add z y
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 11
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4
+mul y x
+add z y
 inp w
 mul x 0
 add x z
@@ -73,7 +70,6 @@ add y w
 add y 10
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -92,7 +88,6 @@ add y w
 add y 14
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -111,7 +106,6 @@ add y w
 add y 10
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -130,7 +124,6 @@ add y w
 add y 4
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -149,7 +142,6 @@ add y w
 add y 14
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -168,7 +160,6 @@ add y w
 add y 1
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -187,7 +178,6 @@ add y w
 add y 6
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -206,7 +196,6 @@ add y w
 add y 0
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -225,7 +214,6 @@ add y w
 add y 9
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
@@ -244,7 +232,6 @@ add y w
 add y 13
 mul y x
 add z y
-
 inp w
 mul x 0
 add x z
