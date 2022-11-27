@@ -23,7 +23,7 @@ data class Answer(
 
 class Sheet {
     private val tests = mutableListOf<Test>()
-    val parts: MutableList<Part> = mutableListOf()
+    internal val parts: MutableList<Part> = mutableListOf()
 
     var breakAdded: Boolean = false
     var ignore: Boolean = false
