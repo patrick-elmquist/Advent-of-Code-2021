@@ -23,7 +23,10 @@ data class Answer(
 
 class Sheet {
     private val tests = mutableListOf<Test>()
-    internal val parts: MutableList<Part> = mutableListOf()
+
+    private val _parts = mutableListOf<Part>()
+    val parts: List<Part>
+        get() = _parts.toList()
 
     var breakAdded: Boolean = false
     var ignore: Boolean = false
@@ -50,9 +53,9 @@ class Sheet {
     }
 
     private fun addPart(n: Int, expected: Any?, block: (Input) -> Any?) {
-        check(parts.none { it.number == n })
+        check(_parts.none { it.number == n })
         if (!ignore) {
-            parts += Part(n, block, expected, tests.toList(), breakAdded)
+            _parts += Part(n, block, expected, tests.toList(), breakAdded)
         }
         ignore = breakAdded
         tests.clear()

@@ -11,14 +11,53 @@ fun main() {
                 SeenState(0, Alu.new()),
                 input.parseInstructions().group(),
                 numberRange = 9 downTo 1
-            )
+            ).getOrThrow()
         }
         part2(expected = 11118151637112L) { input ->
             solve(
                 SeenState(0, Alu.new()),
                 input.parseInstructions().group(),
                 numberRange = 1..9
-            )
+            ).getOrThrow()
+        }
+    }
+}
+
+private fun solve(
+    state: SeenState,
+    instructions: List<List<Instruction>>,
+    numberRange: IntProgression,
+    seenStates: MutableSet<SeenState> = mutableSetOf(),
+    currNum: Long = 0L
+): Result {
+    when {
+        state in seenStates -> return Result.Failure
+        state.numberIndex == 14 -> {
+            return if (state.alu[Register.Z] == 0L) {
+                Result.Success(currNum)
+            } else {
+                seenStates.add(state)
+                Result.Failure
+            }
+        }
+        else -> {
+            for (i in numberRange) {
+                val result = solve(
+                    SeenState(
+                        numberIndex = state.numberIndex + 1,
+                        alu = state.alu.run(instructions[state.numberIndex], i)
+                    ),
+                    instructions,
+                    numberRange,
+                    seenStates,
+                    currNum * 10 + i,
+                )
+                if (result is Result.Success) {
+                    return result
+                }
+            }
+            seenStates.add(state)
+            return Result.Failure
         }
     }
 }
@@ -27,10 +66,10 @@ private fun Input.parseInstructions(): List<Instruction> =
     lines.filter { it.isNotEmpty() }
         .map { line ->
             val split = line.split(" ")
-            val reg = split[1].first().toVariableName()
+            val reg = Register(split[1].first())
             val value = split.getOrNull(2)?.let { Value(it) }
             if (value == null) {
-                Instruction.Inp(reg)
+                Instruction.Inp(reg, Register.IN)
             } else {
                 when (split.first()) {
                     "add" -> Instruction.Add(reg, value)
@@ -62,54 +101,36 @@ private fun List<Instruction>.group(): List<List<Instruction>> {
     return instructions
 }
 
-// rewrite returning result
-private fun solve(
-    state: SeenState,
-    instructions: List<List<Instruction>>,
-    numberRange: IntProgression,
-    seenStates: MutableSet<SeenState> = mutableSetOf(), // should probably be a map?
-    currNum: Long = 0L
-) {
-    if (state in seenStates) return
-    if (state.numberIndex == 14) {
-        if (state.alu[VariableName.Z] == 0L) {
-            TODO("FOUND z==0: ${state}, currNum: $currNum")
-        } else {
-            seenStates.add(state)
+private sealed class Result {
+    data class Success(val number: Long) : Result()
+    object Failure : Result()
+
+    fun getOrThrow(): Long {
+        return when (this) {
+            is Success -> number
+            is Failure -> error("The result was a failure")
         }
-        return
     }
-    for (i in numberRange) {
-        solve(
-            SeenState(
-                numberIndex = state.numberIndex + 1,
-                alu = state.alu.run(instructions[state.numberIndex], i)
-            ),
-            instructions,
-            numberRange,
-            seenStates,
-            currNum * 10 + i,
-        )
-    }
-    seenStates.add(state)
 }
 
-private enum class VariableName { IN, X, Y, W, Z }
-
-private fun Char.toVariableName(): VariableName {
-    return when (this) {
-        'x' -> VariableName.X
-        'y' -> VariableName.Y
-        'z' -> VariableName.Z
-        'w' -> VariableName.W
-        else -> error("Not supported: $this")
+private enum class Register {
+    IN, X, Y, W, Z;
+    companion object {
+        operator fun invoke(char: Char) =
+            when (char) {
+                'x' -> X
+                'y' -> Y
+                'z' -> Z
+                'w' -> W
+                else -> error("Not supported: $this")
+            }
     }
 }
 
 private sealed class Value(private val resolve: List<Long>.() -> Long) {
     data class Number(val value: Long) : Value({ value })
 
-    data class Variable(val variable: VariableName) : Value({ get(variable.ordinal) })
+    data class Variable(val register: Register) : Value({ get(register.ordinal) })
 
     fun resolve(memory: List<Long>) = memory.resolve()
 
@@ -119,20 +140,20 @@ private sealed class Value(private val resolve: List<Long>.() -> Long) {
             return if (long != null) {
                 Number(long)
             } else {
-                Variable(value.first().toVariableName())
+                Variable(Register(value.first()))
             }
         }
     }
 }
 
 private data class Alu(val vars: List<Long>) {
-    operator fun get(variable: VariableName) = vars[variable.ordinal]
+    operator fun get(variable: Register) = vars[variable.ordinal]
 
     fun run(instructions: List<Instruction>, input: Int): Alu {
         val memory = vars.toMutableList()
         for (instruction in instructions) {
             if (instruction is Instruction.Inp) {
-                memory[VariableName.IN.ordinal] = input.toLong()
+                memory[Register.IN.ordinal] = input.toLong()
             }
             instruction(memory)
         }
@@ -140,13 +161,13 @@ private data class Alu(val vars: List<Long>) {
     }
 
     companion object {
-        fun new() = Alu(List(5) {0L} )
+        fun new() = Alu(List(5) { 0L })
     }
 }
 
 private data class SeenState(
     val numberIndex: Int,
-    val alu: Alu = Alu(List(5) { 0L }),
+    val alu: Alu
 )
 
 private sealed class Instruction {
@@ -156,34 +177,34 @@ private sealed class Instruction {
             set(variable.ordinal, value)
         }
 
-    protected abstract fun execute(memory: List<Long>): Pair<VariableName, Long>
+    protected abstract fun execute(memory: List<Long>): Pair<Register, Long>
 
-    data class Inp(val a: VariableName) : Instruction() {
+    data class Inp(val a: Register, val readFrom: Register) : Instruction() {
         override fun execute(memory: List<Long>) =
-            a to memory[VariableName.IN.ordinal]
+            a to memory[readFrom.ordinal]
     }
 
-    data class Add(val a: VariableName, val value: Value) : Instruction() {
+    data class Add(val a: Register, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to (memory[a.ordinal] + value.resolve(memory))
     }
 
-    data class Mul(val a: VariableName, val value: Value) : Instruction() {
+    data class Mul(val a: Register, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to (memory[a.ordinal] * value.resolve(memory))
     }
 
-    data class Div(val a: VariableName, val value: Value) : Instruction() {
+    data class Div(val a: Register, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to (memory[a.ordinal].floorDiv(value.resolve(memory)))
     }
 
-    data class Mod(val a: VariableName, val value: Value) : Instruction() {
+    data class Mod(val a: Register, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to (memory[a.ordinal] % value.resolve(memory))
     }
 
-    data class Eql(val a: VariableName, val value: Value) : Instruction() {
+    data class Eql(val a: Register, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to if (memory[a.ordinal] == value.resolve(memory)) 1L else 0L
     }

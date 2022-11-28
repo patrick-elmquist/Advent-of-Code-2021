@@ -4,11 +4,6 @@ package util
 
 import kotlin.time.measureTimedValue
 
-/**
- * TODO for next year:
- * - Fetch the input files
- * - Create a new Day with a gradle task
- */
 fun day(
     n: Int,
     block: Sheet.() -> Unit
@@ -19,8 +14,9 @@ private inline fun collectSolutions(block: Sheet.() -> Unit): Sheet =
 
 private inline fun Sheet.verifyAndRun(input: Input) {
     parts.forEach { part ->
+        print("Running Part #${part.number}...")
         val result = part.evaluate(input)
-        print("Answer #${part.number}: ")
+        print("Answer: ")
         result
             .onSuccess {
                 println("${it.output} (${it.time.inWholeMilliseconds}ms)")
