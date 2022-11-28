@@ -1,108 +1,97 @@
+import util.Input
 import util.day
-import util.log
 
 // answer #1: 74929995999389
 // answer #2: 11118151637112
 
-// Z must always be > 0 to not break the M
 fun main() {
     day(n = 24) {
         part1(expected = 74929995999389L) { input ->
-            val allInstructions = input.lines.filter { it.isNotEmpty() }
-                .map {
-                    val split = it.split(" ")
-                    val reg = split[1].first().toVariableName()
-                    val value = split.getOrNull(2)?.let { Value(it) }
-                    if (value == null) {
-                        Instruction.Inp(reg)
-                    } else {
-                        when (split.first()) {
-                            "add" -> Instruction.Add(reg, value)
-                            "mul" -> Instruction.Mul(reg, value)
-                            "div" -> Instruction.Div(reg, value)
-                            "mod" -> Instruction.Mod(reg, value)
-                            "eql" -> Instruction.Eql(reg, value)
-                            else -> error("Wtf...${split.first()}")
-                        }
-                    }
-                }
-            val instructions = mutableListOf<List<Instruction>>()
-            var current = mutableListOf<Instruction>()
-            for (i in allInstructions) {
-                if (i is Instruction.Inp) {
-                    if (current.isEmpty()) {
-                        current.add(i)
-                    } else {
-                        instructions.add(current.toList())
-                        current = mutableListOf(i)
-                    }
-                } else {
-                    current.add(i)
-                }
-            }
-            instructions.add(current.toList())
-
             solve(
-                IndexState(0, Alu((List(5) { 0L }))).log(),
-                instructions,
-                mutableSetOf(),
-                0L,
-                largest = false
+                SeenState(0, Alu.new()),
+                input.parseInstructions().group(),
+                numberRange = 9 downTo 1
             )
         }
-        parts
-        part2(expected = 11118151637112L) {
-
+        part2(expected = 11118151637112L) { input ->
+            solve(
+                SeenState(0, Alu.new()),
+                input.parseInstructions().group(),
+                numberRange = 1..9
+            )
         }
     }
 }
 
-var numNumbersProcessedPerSecond = 0.0
-var numNumbersProcessed = 0
-var startTime = System.currentTimeMillis()
-private fun solve(
-    state: IndexState,
-    instructions: List<List<Instruction>>,
-    dp: MutableSet<IndexState>,
-    currNum: Long,
-    largest: Boolean
-) {
-    if (state in dp) return
-    if (state.idx == 14) {
-        numNumbersProcessed++
-        val delta = System.currentTimeMillis() - startTime
-        if (delta > 1000) {
-            numNumbersProcessedPerSecond = numNumbersProcessed / delta.toDouble()
-            numNumbersProcessed = 0
-            startTime = System.currentTimeMillis()
-            println("$currNum (qps=$numNumbersProcessedPerSecond)")
+private fun Input.parseInstructions(): List<Instruction> =
+    lines.filter { it.isNotEmpty() }
+        .map { line ->
+            val split = line.split(" ")
+            val reg = split[1].first().toVariableName()
+            val value = split.getOrNull(2)?.let { Value(it) }
+            if (value == null) {
+                Instruction.Inp(reg)
+            } else {
+                when (split.first()) {
+                    "add" -> Instruction.Add(reg, value)
+                    "mul" -> Instruction.Mul(reg, value)
+                    "div" -> Instruction.Div(reg, value)
+                    "mod" -> Instruction.Mod(reg, value)
+                    "eql" -> Instruction.Eql(reg, value)
+                    else -> error("Wtf...${split.first()}")
+                }
+            }
         }
 
-        if (state.prevALU[VariableName.Z] == 0L) {
-            TODO("FOUND z==0: ${state}, currNum: $currNum")
+private fun List<Instruction>.group(): List<List<Instruction>> {
+    val instructions = mutableListOf<List<Instruction>>()
+    var current = mutableListOf<Instruction>()
+    for (i in this) {
+        if (i is Instruction.Inp) {
+            if (current.isEmpty()) {
+                current.add(i)
+            } else {
+                instructions.add(current.toList())
+                current = mutableListOf(i)
+            }
+        } else {
+            current.add(i)
         }
-        dp.add(state)
+    }
+    instructions.add(current.toList())
+    return instructions
+}
+
+// rewrite returning result
+private fun solve(
+    state: SeenState,
+    instructions: List<List<Instruction>>,
+    numberRange: IntProgression,
+    seenStates: MutableSet<SeenState> = mutableSetOf(), // should probably be a map?
+    currNum: Long = 0L
+) {
+    if (state in seenStates) return
+    if (state.numberIndex == 14) {
+        if (state.alu[VariableName.Z] == 0L) {
+            TODO("FOUND z==0: ${state}, currNum: $currNum")
+        } else {
+            seenStates.add(state)
+        }
         return
     }
-    val range = if (largest) {
-        9L downTo 1L
-    } else {
-        1L..9L
-    }
-    for (i in range) {
-        val currAlu = state.prevALU.toMutable()
-        for (instruction in instructions[state.idx]) {
-            currAlu.consume(instruction, i)
-        }
+    for (i in numberRange) {
         solve(
-            IndexState(state.idx + 1, currAlu.toAlu()),
+            SeenState(
+                numberIndex = state.numberIndex + 1,
+                alu = state.alu.run(instructions[state.numberIndex], i)
+            ),
             instructions,
-            dp,
+            numberRange,
+            seenStates,
             currNum * 10 + i,
-            largest = largest
         )
     }
-    dp.add(state)
+    seenStates.add(state)
 }
 
 private enum class VariableName { IN, X, Y, W, Z }
@@ -117,59 +106,47 @@ private fun Char.toVariableName(): VariableName {
     }
 }
 
-private sealed class Value {
-    abstract fun resolve(memory: List<Long>): Long
-    data class Number(val value: Long) : Value() {
-        override fun resolve(memory: List<Long>): Long = value
-    }
+private sealed class Value(private val resolve: List<Long>.() -> Long) {
+    data class Number(val value: Long) : Value({ value })
 
-    data class Variable(val variable: VariableName) : Value() {
-        override fun resolve(memory: List<Long>): Long =
-            memory[variable.ordinal]
-    }
+    data class Variable(val variable: VariableName) : Value({ get(variable.ordinal) })
+
+    fun resolve(memory: List<Long>) = memory.resolve()
 
     companion object {
         operator fun invoke(value: String): Value {
             val long = value.toLongOrNull()
-            return if (long == null) {
-                Variable(value.first().toVariableName())
-            } else {
+            return if (long != null) {
                 Number(long)
+            } else {
+                Variable(value.first().toVariableName())
             }
         }
     }
 }
 
-private data class Alu(
-    val memory: List<Long>
-) {
-    operator fun get(variable: VariableName) = memory[variable.ordinal]
+private data class Alu(val vars: List<Long>) {
+    operator fun get(variable: VariableName) = vars[variable.ordinal]
 
-    fun toMutable(): MutableAlu {
-        return MutableAlu(memory.toList())
-    }
-}
-
-private class MutableAlu(
-    vars: List<Long>
-) {
-    private var memory = vars.toMutableList()
-
-    fun toAlu() = Alu(memory.toList())
-
-    operator fun get(a: VariableName) = memory[a.ordinal]
-
-    fun consume(instruction: Instruction, input: Long) {
-        if (instruction is Instruction.Inp) {
-            memory[VariableName.IN.ordinal] = input
+    fun run(instructions: List<Instruction>, input: Int): Alu {
+        val memory = vars.toMutableList()
+        for (instruction in instructions) {
+            if (instruction is Instruction.Inp) {
+                memory[VariableName.IN.ordinal] = input.toLong()
+            }
+            instruction(memory)
         }
-        instruction(memory)
+        return Alu(memory.toList())
+    }
+
+    companion object {
+        fun new() = Alu(List(5) {0L} )
     }
 }
 
-private data class IndexState(
-    val idx: Int,
-    val prevALU: Alu,
+private data class SeenState(
+    val numberIndex: Int,
+    val alu: Alu = Alu(List(5) { 0L }),
 )
 
 private sealed class Instruction {
@@ -204,7 +181,6 @@ private sealed class Instruction {
     data class Mod(val a: VariableName, val value: Value) : Instruction() {
         override fun execute(memory: List<Long>) =
             a to (memory[a.ordinal] % value.resolve(memory))
-
     }
 
     data class Eql(val a: VariableName, val value: Value) : Instruction() {
